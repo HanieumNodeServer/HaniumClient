@@ -211,13 +211,48 @@ function ChatScreen({navigation}) {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#F8F8F8'}}>
-      <GiftedChat
-        messages={speech}
+      <View style={{flex: 1}}>
+        {/* <GiftedChat
         disableComposer={true}
         renderComposer={renderComposer}
         text={speech}
         onInputTextChanged={setSpeech}
-      />
+      /> */}
+      </View>
+      <View style={{height: '15%', flexDirection: 'row'}}>
+        <View
+          style={{
+            marginVertical: 10,
+            flex: 5,
+            backgroundColor: '#DFDEDE',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 30,
+          }}>
+          {/* <Text>{results}</Text> */}
+          {partialResults.map((result, index) => {
+            return (
+              <Text key={`result-${index}`} style={styles.stat}>
+                {result}
+              </Text>
+            );
+          })}
+        </View>
+        <TouchableOpacity
+          onPress={_startRecognizing}
+          style={{backgroundColor: 'D1E7F3', justifyContent: 'center'}}>
+          <Image
+            style={{
+              width: 70,
+              height: 70,
+              resizeMode: 'contain',
+            }}
+            source={{
+              uri: 'https://user-images.githubusercontent.com/79521972/182748280-83cb4879-76e5-48d0-bb5c-f5420a34bc62.png',
+            }}
+          />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
