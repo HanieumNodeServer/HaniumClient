@@ -5,6 +5,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import ChatScreen from './screens/ChatScreen';
+import TicketingScreen from './screens/TicketingScreen';
 
 const App = () => {
   const Stack = createStackNavigator();
@@ -19,6 +20,7 @@ const App = () => {
               headerShown: false,
             }}
           />
+
           <Stack.Screen
             name="ChatScreen"
             component={ChatScreen}
@@ -26,6 +28,12 @@ const App = () => {
             //   headerShown: false,
             // }}
           />
+
+          <Stack.Screen
+              name="TicketingScreen"
+              component={TicketingScreen}
+          />
+
         </Stack.Navigator>
       </SafeAreaProvider>
     </NavigationContainer>
