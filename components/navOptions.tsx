@@ -12,8 +12,6 @@ const content = async function(){
         .then((json) => setData(json));
 }*/
 
-
-
 const navOptions = () => {
 
   const navigation = useNavigation();
@@ -25,9 +23,8 @@ const navOptions = () => {
         paddingHorizontal: 15,
         padding: 10,
         backgroundColor: '#EBEBEB',
-      }}
-    >
-      <View style={[{ marginHorizontal: 15, marginTop: 50 }]}>
+      }}>
+      <View style={[{marginHorizontal: 15, marginTop: 50}]}>
         <Text style={styles.text}>불러, 부릉~</Text>
       </View>
       <View
@@ -38,7 +35,8 @@ const navOptions = () => {
           justifyContent: 'center',
         }}
       >
-        <TouchableOpacity  onPress={() => navigation.push('ChatScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('ChatScreen')}>
+
           <View
             style={{
               width: 150,
@@ -49,8 +47,7 @@ const navOptions = () => {
               elevation: 5,
               backgroundColor: '#D1E7F3',
               margin: 5,
-            }}
-          >
+            }}>
             <Image
               style={{
                 width: 100,
@@ -63,7 +60,7 @@ const navOptions = () => {
             />
           </View>
         </TouchableOpacity>
-        <Text style={{ marginVertical: 10, fontSize: 15 }}>
+        <Text style={{marginVertical: 10, fontSize: 15}}>
           버튼을 눌러 음성 예매를 시작하세요!
         </Text>
       </View >

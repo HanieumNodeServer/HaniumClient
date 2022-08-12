@@ -26,7 +26,15 @@ import tw from 'twrnc';
 // import {db, auth} from 'firebase'
 import uuid from 'react-native-uuid';
 import {useRecordingCheck} from '../utils/hooks';
-import {GiftedChat, Composer} from 'react-native-gifted-chat';
+import {
+  GiftedChat,
+  Composer,
+  InputToolbar,
+  Bubble,
+  Time,
+  Actions,
+  ActionsProps,
+} from 'react-native-gifted-chat';
 
 const uer = 'asdf';
 const USER = {
@@ -44,28 +52,22 @@ const URL =
 
 function ChatScreen({navigation}) {
   const [messages, setMessages] = useState([]);
-  const [speech, setSpeech] = useState('');
+  // const [speech, setSpeech] = useState('');
 
-  // useEffect(() => {
-  //   setMessages([
-  //     {
-  //       _id: 1,
-  //       text: 'Hello developer',
-  //       createdAt: new Date(),
-  //       user: {
-  //         _id: 2,
-  //         name: 'React Native',
-  //         avatar: 'https://placeimg.com/140/140/any',
-  //       },
-  //     },
-  //   ]);
-  // }, []);
-
-  // const onSend = useCallback((messages = []) => {
-  //   setMessages(previousMessages =>
-  //     GiftedChat.append(previousMessages, messages),
-  //   );
-  // }, []);
+  useEffect(() => {
+    setMessages([
+      {
+        _id: 1,
+        text: '안녕하세요 시외버스 예매 챗봇 AI 부릉이 입니다.',
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: '부릉이',
+          avatar: 'https://placeimg.com/140/140/any',
+        },
+      },
+    ]);
+  }, []);
 
   const [recognized, setRecognized] = useState('');
   const [volume, setVolume] = useState('');
@@ -77,7 +79,7 @@ function ChatScreen({navigation}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: '예매 AI',
+      title: '예매 AI(부릉이)',
       headerStyle: {backgroundColor: '#fff'},
       headerTitleStyle: {color: 'black'},
       headerTintColor: 'black',
@@ -98,12 +100,6 @@ function ChatScreen({navigation}) {
       Voice.destroy().then(Voice.removeAllListeners);
     };
   }, []);
-
-  // const requestAI = async (data: string) => {
-  //   try {
-
-  //   }
-  // }
 
   const onSpeechStart = (e: any) => {
     console.log('onSpeechStart: ', e);
@@ -128,13 +124,13 @@ function ChatScreen({navigation}) {
   const onSpeechResults = (e: SpeechResultsEvent) => {
     console.log('onSpeechResults: ', e);
     setResults(e.value);
-    setSpeech(e.value[0]);
   };
 
   const onSpeechPartialResults = (e: SpeechResultsEvent) => {
     console.log('onSpeechPartialResults: ', e);
     setPartialResults(e.value);
-    setSpeech(e.value[0]);
+    // setMessages(e.value[0]);
+    // setSpeech(e.value[0]);
   };
 
   const onSpeechVolumeChanged = (e: any) => {
@@ -187,57 +183,184 @@ function ChatScreen({navigation}) {
     setPartialResults([]);
   };
 
-  const renderComposer = (props: any, messages = []) => {
+  const onSend = useCallback((messages = []) => {
+    // console.log(messages[0].text);
+    const responseMessages = {
+      _id: uuid.v4(),
+      text: messages,
+      createdAt: new Date(),
+      user: USER,
+    };
+    setMessages(previousMessages =>
+      GiftedChat.append(previousMessages, responseMessages),
+    );
+    _clearState();
+    // requestToAI(messages[0].text);
+  }, []);
+
+  // const handleOnPress = useCallback(() => {
+  //   if (messages && onSend) {
+  //     onSend({text: messages.trim()});
+  //   }
+  // }, [messages, onSend]);
+
+  // const renderComposer = (props: any) => {
+  //   return (
+  //     <View style={{flexDirection: 'row'}}>
+  //       <Composer {...props} />
+  //       <TouchableOpacity
+  //         onPress={_startRecognizing}
+  //         style={{backgroundColor: 'D1E7F3', justifyContent: 'center'}}>
+  //         <Image
+  //           style={{
+  //             width: 40,
+  //             height: 40,
+  //             resizeMode: 'contain',
+  //           }}
+  //           source={{
+  //             uri: 'https://user-images.githubusercontent.com/79521972/182748280-83cb4879-76e5-48d0-bb5c-f5420a34bc62.png',
+  //           }}
+  //         />
+  //       </TouchableOpacity>
+  //     </View>
+  //   );
+  // };
+
+  // const renderInputToolbar = (props: any) => {
+  //   return (
+  //     <InputToolbar
+  //       {...props}
+  //       onSend={onSend}
+  //       // onTyping={this.props.onHandleTyping}
+  //       // containerStyle={styles.inputToolbarStyle}
+  //     />
+  //   );
+  // };
+
+  // const onSend2 = useCallback((messages = []) => {
+  //   setMessages(previousMessages =>
+  //     GiftedChat.append(previousMessages, messages),
+  //   );
+  // }, []);
+
+  // const renderSend = (sendProps: any) => {
+  //   if (sendProps.text.trim().length > 0) {
+  //     return (
+  //       <TouchableOpacity>
+  //         <Image
+  //           style={{width: 50, height: 50, resizeMode: 'contain'}}
+  //           source={require('../assets/send.png')}
+  //         />
+  //       </TouchableOpacity>
+  //     );
+  //   }
+  //   return null;
+  // };
+
+  const renderBubble = (props: any) => {
     return (
-      <View style={{flexDirection: 'row'}}>
-        <Composer {...props} />
-        <TouchableOpacity
-          onPress={_startRecognizing}
-          style={{backgroundColor: 'D1E7F3', justifyContent: 'center'}}>
-          <Image
-            style={{
-              width: 70,
-              height: 70,
-              resizeMode: 'contain',
-            }}
-            source={{
-              uri: 'https://user-images.githubusercontent.com/79521972/182748280-83cb4879-76e5-48d0-bb5c-f5420a34bc62.png',
-            }}
-          />
-        </TouchableOpacity>
-      </View>
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#F6F6CC',
+          },
+          left: {
+            backgroundColor: '#D1E7F3',
+          },
+        }}
+        textStyle={{
+          right: {
+            color: 'black',
+          },
+        }}
+        time
+      />
+    );
+  };
+
+  const renderTime = (props: any) => {
+    return (
+      <Time
+        {...props}
+        timeTextStyle={{
+          right: {
+            color: 'gray',
+          },
+          left: {
+            color: 'gray',
+          },
+        }}
+      />
+    );
+  };
+
+  const renderActions = (props: Readonly<ActionsProps>) => {
+    return (
+      <>
+        <Actions
+          {...props}
+          icon={() => (
+            <Image
+              style={{
+                width: 25,
+                height: 25,
+                resizeMode: 'contain',
+              }}
+              source={{
+                uri: 'https://user-images.githubusercontent.com/79521972/182748280-83cb4879-76e5-48d0-bb5c-f5420a34bc62.png',
+              }}
+            />
+          )}
+          onSend={args => console.log(args)}
+        />
+      </>
     );
   };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#F8F8F8'}}>
       <View style={{flex: 1}}>
-        {/* <GiftedChat
-        disableComposer={true}
-        renderComposer={renderComposer}
-        text={speech}
-        onInputTextChanged={setSpeech}
-      /> */}
+        <GiftedChat
+          messages={messages}
+          renderInputToolbar={() => null}
+          // onSend={messages => onSend(messages)}
+          // disableComposer={true}
+          user={USER}
+          renderBubble={renderBubble}
+          renderTime={renderTime}
+          // renderActions={renderActions}
+          // renderComposer={renderComposer}
+          // text={speech}
+          // onInputTextChanged={setMessages}
+        />
       </View>
       <View style={{height: '15%', flexDirection: 'row'}}>
-        <View
+        <TouchableOpacity
+          onPress={() => {
+            onSend(results[0]);
+          }}
           style={{
-            marginVertical: 10,
+            marginVertical: 13,
             flex: 5,
             backgroundColor: '#DFDEDE',
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 30,
+            marginLeft: 15,
           }}>
           {/* <Text>{results}</Text> */}
-          {partialResults.map((result, index) => {
+          <View>
+            <Text style={styles.stat}>{results[0]}</Text>
+          </View>
+          {/* {results.map((result, index) => {
             return (
               <Text key={`result-${index}`} style={styles.stat}>
-                {result}
+                {results[0]}
               </Text>
             );
-          })}
-        </View>
+          })} */}
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={_startRecognizing}
           style={{backgroundColor: 'D1E7F3', justifyContent: 'center'}}>
