@@ -84,7 +84,7 @@ function ChatScreen({navigation}) {
       headerTitleAlign: 'center',
     });
   }, []);
-
+// 건들면 X
   useEffect(() => {
     Voice.onSpeechStart = onSpeechStart;
     Voice.onSpeechRecognized = onSpeechRecognized;
@@ -330,6 +330,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
 });
+/*
 
 // import React, { useState, useEffect } from "react";
 // import Styled from "styled-components/native";
@@ -597,3 +598,4 @@ const styles = StyleSheet.create({
 // });
 
 // export default ChatScreen;
+*/
