@@ -1,9 +1,7 @@
-import {
-  Image, StyleSheet, Text, View,
-} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const navOptions = () => {
   const navigation = useNavigation();
@@ -15,9 +13,8 @@ const navOptions = () => {
         paddingHorizontal: 15,
         padding: 10,
         backgroundColor: '#EBEBEB',
-      }}
-    >
-      <View style={[{ marginHorizontal: 15, marginTop: 50 }]}>
+      }}>
+      <View style={[{marginHorizontal: 15, marginTop: 50}]}>
         <Text style={styles.text}>불러, 부릉~</Text>
       </View>
       <View
@@ -26,8 +23,7 @@ const navOptions = () => {
           flex: 5,
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <TouchableOpacity onPress={() => navigation.navigate('ChatScreen')}>
           <View
             style={{
@@ -39,8 +35,7 @@ const navOptions = () => {
               elevation: 5,
               backgroundColor: '#D1E7F3',
               margin: 5,
-            }}
-          >
+            }}>
             <Image
               style={{
                 width: 100,
@@ -53,7 +48,7 @@ const navOptions = () => {
             />
           </View>
         </TouchableOpacity>
-        <Text style={{ marginVertical: 10, fontSize: 15 }}>
+        <Text style={{marginVertical: 10, fontSize: 15}}>
           버튼을 눌러 음성 예매를 시작하세요!
         </Text>
       </View>
@@ -65,10 +60,9 @@ const navOptions = () => {
           backgroundColor: '#D1E7F3',
           borderRadius: 20,
           padding: 10,
-        }}
-      >
+        }}>
         <View>
-          <Text style={{ fontSize: 15, margin: 10 }}>예매 현황</Text>
+          <Text style={{fontSize: 15, margin: 10}}>예매 현황</Text>
         </View>
       </TouchableOpacity>
     </View>
