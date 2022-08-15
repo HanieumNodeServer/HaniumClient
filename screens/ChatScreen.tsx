@@ -48,7 +48,7 @@ const BOT = {
 };
 
 const URL =
-  'http://210.178.239.160:3000/bus/reservation/auto/ai?latitude=37.6199365&longitude=127.0610036';
+  'http://43.200.99.243/bus/reservation/auto/ai?latitude=37.6199365&longitude=127.0610036';
 
 function ChatScreen({navigation}) {
   const [messages, setMessages] = useState([]);
@@ -86,7 +86,7 @@ function ChatScreen({navigation}) {
       headerTitleAlign: 'center',
     });
   }, []);
-// 건들면 X
+  // 건들면 X
   useEffect(() => {
     Voice.onSpeechStart = onSpeechStart;
     Voice.onSpeechRecognized = onSpeechRecognized;
@@ -194,8 +194,10 @@ function ChatScreen({navigation}) {
     setMessages(previousMessages =>
       GiftedChat.append(previousMessages, responseMessages),
     );
+    console.log(messages);
     _clearState();
-    // requestToAI(messages[0].text);
+    // dummy();
+    requestToAI(messages);
   }, []);
 
   // const handleOnPress = useCallback(() => {
@@ -256,6 +258,122 @@ function ChatScreen({navigation}) {
   //   }
   //   return null;
   // };
+
+  const data = {
+    isSuccess: true,
+    code: 0,
+    message: '말씀하신 요청사항에 따른 추천 배차 정보입니다.',
+    result: {
+      departure: '동서울',
+      arrival: '신철원',
+      LINE: {
+        corName: '경기고속',
+        time: '1430',
+        rotId: 'RT201603173067324',
+        rotSqno: '1',
+        busGrade: 'IDG',
+        alcnSqno: '2006',
+        durationTime: 120,
+      },
+    },
+  };
+
+  const dummy = async () => {
+    const responseMessages = {
+      _id: uuid.v4(),
+      text:
+        //json.message
+        data.message +
+        '\n' +
+        '1. 출발지:' +
+        data.result.departure +
+        '2. 도착지:' +
+        data.result.arrival +
+        '3. 출발 시간:' +
+        data.result.LINE.time +
+        '4. 예상 도착 시간:' +
+        data.result.LINE.durationTime +
+        "\n만약 수정하고 싶은 정보가 있다면 해당하는 번호를 말씀해 주세요.\n그렇지 않고 그대로 예매를 진행하기를 원하면 '예약' 혹은 '예약해 줘' 라고 말씀해 주세요.",
+      createdAt: new Date(),
+      user: BOT,
+    };
+    setMessages(previousMessages =>
+      GiftedChat.append(previousMessages, responseMessages),
+    );
+  };
+
+  const requestToAI = async (message: string) => {
+    try {
+      const response = await fetch(URL, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          string: message,
+        }),
+      });
+
+      const json = await response.json();
+      console.log(json);
+
+      let hour = 0;
+      let min = 0;
+
+      let start = [
+        json.result.LINE.time.slice(0, 2),
+        '시 ',
+        json.result.LINE.time.slice(2),
+        '분',
+      ].join('');
+
+      const duration =
+        json.result.LINE.durationTime >= 60
+          ? `${json.result.LINE.durationTime / 60}시간 ${
+              json.result.LINE.durationTime % 60
+            } 분`
+          : `${json.result.LINE.durationTime % 60} 분`;
+
+      console.log(duration);
+
+      const responseMessages = {
+        _id: uuid.v4(),
+        text:
+          //json.message
+          json.message +
+          '\n' +
+          '1. 출발지: ' +
+          json.result.departure +
+          '\n2. 도착지: ' +
+          json.result.arrival +
+          '\n3. 출발 시간: ' +
+          start +
+          '\n4. 예상 소요 시간: ' +
+          // json.result.LINE.durationTime + '분' +
+          duration +
+          // json.result.LINE.durationTime / 60 +
+          // '시간 ' +
+          // (json.result.LINE.durationTime % 60) +
+          // '분' +
+          // (json.result.LINE.durationTime >= 60) ?
+          // (hour +
+          // '시간 ' +
+          // min +
+          // '분'):
+          // (min +
+          // '분')
+          "\n\n만약 수정하고 싶은 정보가 있다면 해당하는 번호를 말씀해 주세요.('2' 혹은 '2번')\n그렇지 않고 그대로 예매를 진행하기를 원하면 '예약' 혹은 '예약해 줘' 라고 말씀해 주세요.",
+        createdAt: new Date(),
+        user: BOT,
+      };
+      setMessages(previousMessages =>
+        GiftedChat.append(previousMessages, responseMessages),
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const renderBubble = (props: any) => {
     return (
@@ -339,6 +457,7 @@ function ChatScreen({navigation}) {
         <TouchableOpacity
           onPress={() => {
             onSend(results[0]);
+            // onSend('asdf');
           }}
           style={{
             marginVertical: 13,
