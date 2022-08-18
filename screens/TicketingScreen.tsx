@@ -3,11 +3,14 @@ import {SafeAreaView, Text, View, Image, StyleSheet} from 'react-native';
 import moment from 'moment';
 
 function TicketingScreen({navigation}) {
+
   const [departData, setDepartData] = useState(undefined);
   const [arrivalData, setArrivalData] = useState(undefined);
   const [charge, setCharge] = useState(undefined);
   const [corName, setCorName] = useState(undefined);
   const [seat, setSeat] = useState(undefined);
+  const [month, setMonth] = useState(undefined);
+  const [day, setDay] = useState(undefined);
   const [startTime, setStartTime] = useState(undefined);
   const [arrivalTime, setArrivalTime] = useState(undefined);
   const [exist, isExist] = useState<boolean>(false);
@@ -21,28 +24,26 @@ function TicketingScreen({navigation}) {
     fetch(url, {method: 'GET'})
       .then(response => response.json())
       .then(json => {
-        let start = [
-          json.result.result[0].startTime.slice(0, 2),
-          '시',
-          json.result.result[0].startTime.slice(2),
-          '분',
-        ].join('');
+          let start = new Date(json.result.result[0].startTime);
+          let end = new Date(json.result.result[0].arrivalTime);
 
-        let end = [
-          json.result.result[0].arrivalTime.slice(0, 2),
-          '시',
-          json.result.result[0].arrivalTime.slice(2),
-          '분',
-        ].join('');
+          let start2 = moment(json.result.result[0].startTime);
+          let end2 = moment(json.result.result[0].arrivalTime);
+          // end2 = end2
+          const start3 = `${start2.format('HH')}시 ${start2.format('mm')}분`;
+          console.log(start3);
 
-        // console.log([json.result.result[0].DepartTerminal,json.result.result[0].ArrivalTerminal])
-        setDepartData(json.result.result[0].DepartTerminal);
-        setArrivalData(json.result.result[0].ArrivalTerminal);
-        setCharge(json.result.result[0].charge);
-        setCorName(json.result.result[0].corName);
-        setSeat(json.result.result[0].seat);
-        setStartTime(start);
-        setArrivalTime(end);
+          const end3 = `${end2.format('HH')}시 ${end2.format('mm')}분`;
+          console.log(end3);        // console.log([json.result.result[0].DepartTerminal,json.result.result[0].ArrivalTerminal])
+          setDepartData(json.result.result[0].DepartTerminal);
+          setArrivalData(json.result.result[0].ArrivalTerminal);
+          setCharge(json.result.result[0].charge);
+          setCorName(json.result.result[0].corName);
+          setSeat(json.result.result[0].seat);
+          setMonth((start.getMonth()+1));
+          setDay(start.getDate());
+          setStartTime(start3);
+          setArrivalTime(end3);
 
         if (departData) {
           isExist(true);
@@ -90,9 +91,7 @@ function TicketingScreen({navigation}) {
               resizeMode: 'cover',
               overflow: 'hidden',
             }}
-            source={{
-              uri: 'https://user-images.githubusercontent.com/66247589/184088529-93da1059-0982-4222-8617-3f994035877e.PNG',
-            }}
+            source={require("../assets/bus.png")}
           />
           <Text style={styles.contents}>{corName}</Text>
         </View>
@@ -123,6 +122,7 @@ function TicketingScreen({navigation}) {
       </View>
     </SafeAreaView>
   );
+
 }
 
 export default TicketingScreen;

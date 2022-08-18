@@ -53,13 +53,10 @@ const TicketingInfo= () =>{
                 <View style={styles.view}>
                     <Image
                         style={{
-
                             width : "30%",
                             height : "90%"
                         }}
-                        source={{
-                            uri : 'https://user-images.githubusercontent.com/66247589/184088529-93da1059-0982-4222-8617-3f994035877e.PNG'
-                        }}
+                        source={require("../assets/bus.png")}
                     />
                     <Text style={styles.contents}>{departData} ➡➡ {arrivalData}</Text>
                 </View>

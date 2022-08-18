@@ -27,6 +27,7 @@ const navOptions = () => {
       <View style={[{marginHorizontal: 15, marginTop: 50}]}>
         <Text style={styles.text}>불러, 부릉~</Text>
       </View>
+
       <View
         style={{
           // height: "90%",
@@ -54,9 +55,7 @@ const navOptions = () => {
                 height: 100,
                 resizeMode: 'contain',
               }}
-              source={{
-                uri: 'https://user-images.githubusercontent.com/79521972/182748280-83cb4879-76e5-48d0-bb5c-f5420a34bc62.png',
-              }}
+              source={require("../assets/MAIN_MIC.png")}
             />
           </View>
         </TouchableOpacity>
