@@ -323,20 +323,23 @@ function ChatScreen({navigation}) {
     let stringSearch = messages.toString().search('예약');
     const seatStringSearch = messages.toString().replace(/[^0-9]/g, '');
     const number = parseInt(seatStringSearch);
+    const isA = /^\d[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+    const isB = /^\d{1,2}$/;
 
     console.log(number);
     console.log(stringSearch);
+    console.log(isA.test(messages), isB.test(messages));
 
     if (stringSearch === 0) {
       pickSeat(body);
-    } else if (!isNaN(number)) {
+    } else if (isA.test(messages) || isB.test(messages)) {
       reserveTicket(body, number);
     } else {
       requestToAI(messages);
     }
     console.log(body);
 
-    _clearBody();
+    // _clearBody();
   }, []);
 
   // const handleOnPress = useCallback(() => {
@@ -472,8 +475,8 @@ function ChatScreen({navigation}) {
       });
 
       const json = await response.json();
-      console.log(json);
-      console.log(body);
+      console.log('json' + json);
+      console.log('body' + body);
 
       body.routeId = json.result.routeId;
       body.date = json.result.date;
@@ -596,6 +599,8 @@ function ChatScreen({navigation}) {
             "\n\n 원하시는 좌석 번호를 말씀해주세요 (예시 : '21번')",
           createdAt: new Date(),
           user: BOT,
+          image:
+            'https://raw.githubusercontent.com/speardragon/save-image-repo/main/img/image-20220918185347921.png',
         };
       } else if (!json.isSuccess) {
         responseMessages = {
@@ -617,6 +622,7 @@ function ChatScreen({navigation}) {
   const reserveTicket = async (data, number) => {
     let url = 'http://43.200.99.243/bus/reservation/ticket';
 
+    console.log(data);
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -637,7 +643,7 @@ function ChatScreen({navigation}) {
 
       const json = await response.json();
 
-      console.log(json);
+      console.log('json', json);
 
       console.log(json.isSuccess);
       let responseMessages;
