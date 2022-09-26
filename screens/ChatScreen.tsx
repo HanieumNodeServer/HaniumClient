@@ -12,6 +12,7 @@ import {
   Image,
   FlatList,
   PermissionsAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useLayoutEffect, useState, useCallback, useEffect} from 'react';
 import Voice, {
@@ -38,13 +39,14 @@ import {
 } from 'react-native-gifted-chat';
 import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
+import 'moment/locale/ko';
 
 interface ILocation {
   latitude: number;
   longitude: number;
 }
 
-const uer = 'asdf';
 const USER = {
   _id: 1,
   name: 'Me',
@@ -56,20 +58,9 @@ const BOT = {
     'https://www.urbanbrush.net/web/wp-content/uploads/edd/2019/04/urbanbrush-20190415104502071218.png',
 };
 
-/*Array.matrix = function (m, n, initial) {
-  let a, i, j, mat = [];
-  for (i = 0; i < m; i += 1) {
-    a = [];
-    for (j = 0; j < n; j += 1) {
-      a[j] = initial;
-    }
-    mat[i] = a;
-  }
-  return mat;
-};
-
-let seatArray = Array.matrix(8,3,0);
-console.log(seatArray);*/
+const firstMessage = `🤖안녕하세요 시외버스 예매 챗봇 AI\n'부릉이' 입니다!\n\n\
+아래보이시는 마이크 버튼을 눌러 예매를 시작해 주세요!\n\n⭕사용 예시⭕\n✅내일 오후 3시에 서울에서 부산으로 갈래\n✅이번주 금요일 인천 천안\n✅내일 대구\n\n\
+❌주의 사항❌\n가고자 하는 곳과 출발하시는 곳은 '지역명 혹은 터미널이름'을 말해주셔야 더 원활한 서비스가 제공됩니다.`;
 
 type messageType = {
   id: number;
@@ -129,7 +120,7 @@ function ChatScreen({navigation}) {
     setMessages([
       {
         _id: 1,
-        text: `안녕하세요 시외버스 예매 챗봇 AI 부릉이 입니다.\n\n<사용 예시>\n1. 내일 3시에 서울에서 부산으로 갈래\n `,
+        text: firstMessage,
         createdAt: new Date(),
         user: {
           _id: 2,
@@ -148,6 +139,7 @@ function ChatScreen({navigation}) {
   const [results, setResults] = useState([]);
   const [partialResults, setPartialResults] = useState([]);
   const [location, setLocation] = useState<ILocation | undefined>(undefined);
+  const [isProgress, setIsProgress] = useState(false);
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -207,7 +199,10 @@ function ChatScreen({navigation}) {
     };
   }, []);
 
+  // console.log(isProgress);
+
   const onSpeechStart = (e: any) => {
+    setIsProgress(true);
     console.log('onSpeechStart: ', e);
     setStarted('√');
   };
@@ -218,22 +213,27 @@ function ChatScreen({navigation}) {
   };
 
   const onSpeechEnd = (e: any) => {
+    setIsProgress(false);
     console.log('onSpeechEnd: ', e);
     setEnd('√');
   };
 
   const onSpeechError = (e: SpeechErrorEvent) => {
+    setIsProgress(false);
     console.log('onSpeechError: ', e);
     setError(JSON.stringify(e.error));
   };
 
   const onSpeechResults = (e: SpeechResultsEvent) => {
     console.log('onSpeechResults: ', e);
+    setIsProgress(false);
+    console.log(isProgress);
     setResults(e.value);
   };
 
   const onSpeechPartialResults = (e: SpeechResultsEvent) => {
     console.log('onSpeechPartialResults: ', e);
+
     setPartialResults(e.value);
     // setMessages(e.value[0]);
     // setSpeech(e.value[0]);
@@ -320,11 +320,25 @@ function ChatScreen({navigation}) {
     _clearState();
     // dummy();
 
-    let stringSearch = messages.toString().search('예약');
+    let stringSearch = messages.toString().search('예매');
     const seatStringSearch = messages.toString().replace(/[^0-9]/g, '');
     const number = parseInt(seatStringSearch);
-    const isA = /^\d[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+    const isA = /^\d{1,2}번/;
     const isB = /^\d{1,2}$/;
+
+    const resetObject = messages
+      .toString()
+      .search(/그만|취소|다시|초기화|stop|스탑|스톱|처음부터/);
+    // const resetObject = {
+    // A: messages.toString().search('그만'),
+    // B: messages.toString().search('취소'),
+    // C: messages.toString().search('다시'),
+    // D: messages.toString().search('초기화'),
+    // D: messages.toString().search('stop'),
+    // D: messages.toString().search('스탑'),
+    // D: messages.toString().search('스톱'),
+    // D: messages.toString().search(''),
+    // }
 
     console.log(number);
     console.log(stringSearch);
@@ -334,10 +348,12 @@ function ChatScreen({navigation}) {
       pickSeat(body);
     } else if (isA.test(messages) || isB.test(messages)) {
       reserveTicket(body, number);
+    } else if (resetObject === 0) {
+      resetChatting();
     } else {
       requestToAI(messages);
     }
-    console.log(body);
+    // console.log(body);
 
     // _clearBody();
   }, []);
@@ -457,6 +473,8 @@ function ChatScreen({navigation}) {
 
     console.log(URL);
 
+    console.log(body);
+
     try {
       const response = await fetch(URL, {
         method: 'POST',
@@ -475,21 +493,26 @@ function ChatScreen({navigation}) {
       });
 
       const json = await response.json();
-      console.log('json' + json);
-      console.log('body' + body);
+      console.log('json');
+      console.log(json);
+      console.log('body');
+      console.log(body);
+      console.log(json.message.length);
 
-      body.routeId = json.result.routeId;
-      body.date = json.result.date;
-      body.time = json.result.LINE.time;
-      body.rotId = json.result.LINE.rotId;
-      body.corName = json.result.LINE.corName;
-      body.duration = json.result.LINE.durationTime;
+      body.routeId = json.result?.routeId ?? '';
+      body.date = json.result?.date ?? '';
+      body.time = json.result?.LINE?.time ?? '';
+      body.rotId = json.result?.LINE?.rotId ?? '';
+      body.corName = json.result?.LINE?.corName ?? '';
+      body.duration = json.result?.LINE?.durationTime ?? '';
 
       let responseMessages;
+      console.log('두번째 body');
+      console.log(body);
 
-      console.log(json.isSuccess);
+      // console.log(json.isSuccess);
 
-      if (json.isSuccess) {
+      if (json.isSuccess && json.message.length > 20) {
         let hour = 0;
         let min = 0;
 
@@ -509,13 +532,15 @@ function ChatScreen({navigation}) {
 
         console.log(duration);
 
+        let newDuration = moment(json.result.LINE.durationTime).format();
+
         responseMessages = {
           _id: uuid.v4(),
           text:
             json.message +
             '\n' +
-            '\n날짜: ' +
-            json.result.date +
+            '\n▪️날짜: ' +
+            moment(json.result.date, 'YYYYMMDD').format('ll') +
             '\n\n1. 출발지: ' +
             json.result.departure +
             '\n2. 도착지: ' +
@@ -524,11 +549,11 @@ function ChatScreen({navigation}) {
             start +
             '\n4. 예상 소요 시간: ' +
             duration +
-            "\n\n만약 수정하고 싶으시면 다시 말씀해주세요\n그렇지 않고 그대로 예매를 진행하기를 원하면 '예약' 혹은 '예약해 줘' 라고 말씀해 주세요.",
+            "\n\n▪️만약 수정하고 싶으시면 바꾸고 싶은 정보만 다시 말씀해주세요.\n▪️그렇지 않고 그대로 예매를 진행하기 원하면 '예매' 혹은 '예매해 줘' 라고 말씀해 주세요.",
           createdAt: new Date(),
           user: BOT,
         };
-      } else if (!json.isSuccess) {
+      } else {
         responseMessages = {
           _id: uuid.v4(),
           text: json.message,
@@ -564,15 +589,15 @@ function ChatScreen({navigation}) {
         },
       });
       const json = await response.json();
-      console.log(json);
+      //console.log(json);
 
-      console.log(json.isSuccess);
+      //console.log(json.isSuccess);
       let responseMessages;
 
       if (json.isSuccess) {
         let list = json.result.SEAT_LIST;
 
-        console.log(JSON.stringify(json.result.SEAT_LIST));
+        // console.log(JSON.stringify(json.result.SEAT_LIST));
 
         // const seat = JSON.stringify(json.result.SEAT_LIST);
         // const seatList = seat.split(',');
@@ -583,20 +608,45 @@ function ChatScreen({navigation}) {
 
         body.charge = json.result.FEE;
 
+        let resultFee = json.result.FEE;
+        let regexp = /\B(?=(\d{3})+(?!\d))/g;
+        let resultCharge = resultFee.toString().replace(regexp, ',');
+
+        let stringSeat = JSON.stringify(json.result.SEAT_LIST);
+        let seatTrim = stringSeat.slice(1, -1);
+        //console.log(seatTrim);
+        let seatList = seatTrim.split(',');
+
+        let result = seatList.map((data, index) => JSON.parse(data));
+
+        let x = new Array(36);
+        for (let i in result) {
+          if (parseInt(i) + 1 === 3 || 7 || 11 || 15 || 19 || 23 || 27 || 31) {
+            x[i] = ' ';
+          }
+          // console.log(result[i][parseInt(i) + 1]);
+          if (result[i][parseInt(i) + 1] === 'N') {
+            x[i] = 'X';
+          } else {
+            x[i] = parseInt(i) + 1;
+          }
+        }
+
+        let filtered = x.filter(item => item !== undefined);
+
         responseMessages = {
           _id: uuid.v4(),
           text:
             // json.message +
-            '가격 정보 : 일반 1명(' +
-            json.result.FEE +
-            '₩) \n\n' +
-            '좌석을 선택해주세요\n' +
+            '▪️가격 정보 : 일반 1명 (' +
+            resultCharge +
+            '원) \n\n' +
             '\n' +
-            '잔여 좌석 개수 :' +
+            '▪️잔여 좌석 개수 :' +
             json.result.REST_SEAT_CNT +
-            '석\n 좌석 정보 :\n' +
-            JSON.stringify(json.result.SEAT_LIST) +
-            "\n\n 원하시는 좌석 번호를 말씀해주세요 (예시 : '21번')",
+            '석\n▪️좌석 정보 :\n' +
+            filtered +
+            "\n\n▪️그림을 클릭하여 좌석을 확인하고 남아있는 좌석 중 원하시는 좌석의 번호를 말씀해주세요 (예시 : '21번' 혹은 '21')",
           createdAt: new Date(),
           user: BOT,
           image:
@@ -617,6 +667,21 @@ function ChatScreen({navigation}) {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const resetChatting = async () => {
+    _clearBody();
+    let responseMessages;
+
+    responseMessages = {
+      _id: uuid.v4(),
+      text: '원하시는 정보를 처음부터 다시 말씀해 주세요.',
+      createdAt: new Date(),
+      user: BOT,
+    };
+    setMessages(previousMessages =>
+      GiftedChat.append(previousMessages, responseMessages),
+    );
   };
 
   const reserveTicket = async (data, number) => {
@@ -667,6 +732,7 @@ function ChatScreen({navigation}) {
       setMessages(previousMessages =>
         GiftedChat.append(previousMessages, responseMessages),
       );
+      _clearBody();
     } catch (error) {
       console.log(error);
     }
@@ -733,6 +799,71 @@ function ChatScreen({navigation}) {
     );
   };
 
+  let mic;
+  let sendButton;
+
+  if (results.length !== 0) {
+    sendButton = (
+      <TouchableOpacity
+        onPress={() => {
+          onSend(results[0]);
+        }}
+        style={{
+          marginVertical: 13,
+          flex: 5,
+          backgroundColor: '#DFDEDE',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 30,
+          marginLeft: 15,
+        }}>
+        <View>
+          <Text style={styles.stat}>
+            {isProgress ? partialResults[0] : results[0]}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  } else {
+    sendButton = (
+      <View
+        style={{
+          marginVertical: 13,
+          flex: 5,
+          backgroundColor: '#DFDEDE',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 30,
+          marginLeft: 15,
+        }}>
+        <View>
+          <Text style={styles.stat}>
+            {isProgress ? partialResults[0] : results[0]}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (!isProgress) {
+    mic = (
+      <TouchableOpacity
+        onPress={_startRecognizing}
+        style={{justifyContent: 'center'}}>
+        <Image
+          style={{
+            width: 70,
+            height: 70,
+            resizeMode: 'contain',
+          }}
+          source={require('../assets/MAIN_MIC.png')}
+        />
+      </TouchableOpacity>
+    );
+  } else {
+    mic = <ActivityIndicator size={70} color="#00ff00" />;
+  }
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#F8F8F8'}}>
       <View style={{flex: 1}}>
@@ -751,33 +882,9 @@ function ChatScreen({navigation}) {
         />
       </View>
       <View style={{height: '15%', flexDirection: 'row'}}>
-        <TouchableOpacity
-          onPress={() => {
-            onSend(results[0]);
-            // onSend('asdf');
-          }}
-          style={{
-            marginVertical: 13,
-            flex: 5,
-            backgroundColor: '#DFDEDE',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 30,
-            marginLeft: 15,
-          }}>
-          {/* <Text>{results}</Text> */}
-          <View>
-            <Text style={styles.stat}>{results[0]}</Text>
-          </View>
-          {/* {results.map((result, index) => {
-            return (
-              <Text key={`result-${index}`} style={styles.stat}>
-                {results[0]}
-              </Text>
-            );
-          })} */}
-        </TouchableOpacity>
-        <TouchableOpacity
+        {sendButton}
+        {mic}
+        {/* <TouchableOpacity
           onPress={_startRecognizing}
           style={{backgroundColor: 'D1E7F3', justifyContent: 'center'}}>
           <Image
@@ -788,7 +895,7 @@ function ChatScreen({navigation}) {
             }}
             source={require('../assets/MAIN_MIC.png')}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );
@@ -865,6 +972,10 @@ const styles = StyleSheet.create({
     color: 'black',
 
     marginBottom: 1,
+  },
+  nonStat: {
+    textAlign: 'center',
+    color: 'white',
   },
 });
 /*

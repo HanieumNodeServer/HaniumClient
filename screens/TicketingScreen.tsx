@@ -1,9 +1,15 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {SafeAreaView, Text, View, Image, StyleSheet} from 'react-native';
+import {
+  SafeAreaView,
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import moment from 'moment';
 
 function TicketingScreen({navigation}) {
-
   const [departData, setDepartData] = useState(undefined);
   const [arrivalData, setArrivalData] = useState(undefined);
   const [charge, setCharge] = useState(undefined);
@@ -14,9 +20,11 @@ function TicketingScreen({navigation}) {
   const [startTime, setStartTime] = useState(undefined);
   const [arrivalTime, setArrivalTime] = useState(undefined);
   const [exist, isExist] = useState<boolean>(false);
+  const [date, setDate] = useState('');
+  const [rest, setRest] = useState('');
+  const [weekday, setWeekday] = useState(0);
 
-  const date = moment().format('M월DD일');
-
+  const week = ['일', '월', '화', '수', '목', '금', '토'];
   const url =
     'http://43.200.99.243/user/ticket/reservation/info?' + 'userId=' + '1'; // 바꾸기
 
@@ -24,26 +32,32 @@ function TicketingScreen({navigation}) {
     fetch(url, {method: 'GET'})
       .then(response => response.json())
       .then(json => {
-          let start = new Date(json.result.result[0].startTime);
-          let end = new Date(json.result.result[0].arrivalTime);
+        let start = new Date(json.result.result[0].startTime);
+        let end = new Date(json.result.result[0].arrivalTime);
 
-          let start2 = moment(json.result.result[0].startTime);
-          let end2 = moment(json.result.result[0].arrivalTime);
-          // end2 = end2
-          const start3 = `${start2.format('HH')}시 ${start2.format('mm')}분`;
-          console.log(start3);
+        let start2 = moment(json.result.result[0].startTime);
+        let end2 = moment(json.result.result[0].arrivalTime);
+        // end2 = end2
+        const start3 = `${start2.format('HH:mm')}`;
+        console.log(start3);
 
-          const end3 = `${end2.format('HH')}시 ${end2.format('mm')}분`;
-          console.log(end3);        // console.log([json.result.result[0].DepartTerminal,json.result.result[0].ArrivalTerminal])
-          setDepartData(json.result.result[0].DepartTerminal);
-          setArrivalData(json.result.result[0].ArrivalTerminal);
-          setCharge(json.result.result[0].charge);
-          setCorName(json.result.result[0].corName);
-          setSeat(json.result.result[0].seat);
-          setMonth((start.getMonth()+1));
-          setDay(start.getDate());
-          setStartTime(start3);
-          setArrivalTime(end3);
+        const end3 = `${end2.format('HH:mm')}`;
+        console.log(end3); // console.log([json.result.result[0].DepartTerminal,json.result.result[0].ArrivalTerminal])
+        setDepartData(json.result.result[0].DepartTerminal);
+        setArrivalData(json.result.result[0].ArrivalTerminal);
+        setCharge(json.result.result[0].charge);
+        setCorName(json.result.result[0].corName);
+        setSeat(json.result.result[0].seat);
+        setMonth(start.getMonth() + 1);
+        setDay(start.getDate());
+        setStartTime(start3);
+        setArrivalTime(end3);
+
+        setDate(moment(json.result.result[0].startTime).format('MM/DD'));
+        setRest(
+          moment(json.result.result[0].startTime).startOf('day').fromNow(),
+        );
+        setWeekday(moment(json.result.result[0].startTime).weekday());
 
         if (departData) {
           isExist(true);
@@ -71,18 +85,48 @@ function TicketingScreen({navigation}) {
         margin: 20,
         backgroundColor: '#D1E7F3',
         borderRadius: 20,
-        padding: 10,
+        paddingHorizontal: 10,
       }}>
-      <Text style={{fontSize: 15, margin: 5}}>예매 현황</Text>
+      <View
+        style={{
+          padding: 12,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text
+          style={{
+            fontSize: 15,
+            margin: 5,
+            textAlign: 'center',
+            color: 'black',
+          }}>
+          시외버스 승차권
+        </Text>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: 'gray',
+            padding: 5,
+          }}>
+          <View>
+            <Text style={{color: 'white'}}>{`예매 취소`}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
 
       <View
         style={{
           backgroundColor: '#ffffff',
           borderRadius: 20,
+          height: 'auto',
+          padding: 10,
+          paddingHorizontal: 18,
         }}>
         <View
           style={{
             alignItems: 'center',
+            marginBottom: 15,
           }}>
           <Image
             style={{
@@ -91,38 +135,49 @@ function TicketingScreen({navigation}) {
               resizeMode: 'cover',
               overflow: 'hidden',
             }}
-            source={require("../assets/bus.png")}
+            source={require('../assets/bus.png')}
           />
           <Text style={styles.contents}>{corName}</Text>
         </View>
 
-        <View
-          style={{
-            height: 'auto',
-            alignItems: 'flex-start',
-          }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text
             style={{
-              fontSize: 20,
-              marginLeft: 10,
+              fontSize: 18,
               color: '#000000',
             }}>
-            {date}
+            {`${date}(${week[weekday]})`}
           </Text>
+          <Text
+            style={{
+              fontSize: 23,
+              color: 'black',
+              marginLeft: 10,
+            }}>{`${rest}`}</Text>
         </View>
-        <View
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text style={{fontSize: 25, marginTop: 10, color: 'black'}}>
+            {startTime}
+          </Text>
+          <Text
+            style={{fontSize: 17, marginTop: 10}}>{` ~ ${arrivalTime}`}</Text>
+        </View>
+
+        <TouchableOpacity
           style={{
-            height: 'auto',
-            alignItems: 'flex-start',
+            backgroundColor: '#D1E7F3',
+            marginTop: 15,
+            padding: 5,
+            width: 130,
+            borderRadius: 7,
           }}>
-          <Text style={{fontSize: 17, marginLeft: 10}}>
-            {startTime} ~ {arrivalTime}
-          </Text>
-        </View>
+          <View>
+            <Text style={{color: 'black'}}>{`좌석: `}</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
-
 }
 
 export default TicketingScreen;
