@@ -41,6 +41,9 @@ import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import 'moment/locale/ko';
+import {useSelector} from 'react-redux';
+import {selectObject, setObject} from '../slices/navSlice';
+import {useDispatch} from 'react-redux';
 
 interface ILocation {
   latitude: number;
@@ -76,38 +79,38 @@ function ChatScreen({navigation}) {
     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
   );
 
-  const seatData =
-    '[{"1":"N"},{"2":"Y"},{"3":"N"},{"4":"Y"},{"5":"N"},{"6":"N"},{"7":"N"},{"8":"Y"},{"9":"N"},{"10":"N"},{"11":"Y"},{"12":"N"},{"13":"N"},{"14":"N"},{"15":"N"},{"16":"N"},{"17":"Y"},{"18":"N"},{"19":"N"},{"20":"Y"},{"21":"N"},{"22":"N"},{"23":"Y"},{"24":"N"},{"25":"Y"},{"26":"Y"},{"27":"N"},{"28":"Y"}]';
+  // const seatData =
+  //   '[{"1":"N"},{"2":"Y"},{"3":"N"},{"4":"Y"},{"5":"N"},{"6":"N"},{"7":"N"},{"8":"Y"},{"9":"N"},{"10":"N"},{"11":"Y"},{"12":"N"},{"13":"N"},{"14":"N"},{"15":"N"},{"16":"N"},{"17":"Y"},{"18":"N"},{"19":"N"},{"20":"Y"},{"21":"N"},{"22":"N"},{"23":"Y"},{"24":"N"},{"25":"Y"},{"26":"Y"},{"27":"N"},{"28":"Y"}]';
 
-  const seatTrim = seatData.slice(1, -1);
-  const seatList = seatTrim.split(',');
+  // const seatTrim = seatData.slice(1, -1);
+  // const seatList = seatTrim.split(',');
 
   // const result = seatList[0];
 
   // seatList.forEach(sdf => console.log(sdf));
-  const result = seatList.map((data, index) => JSON.parse(data));
+  // const result = seatList.map((data, index) => JSON.parse(data));
 
   // const x = new Array(9);
   // for (let i = 0; i < x.length; i++) {
   //   x[i] = new Array(4);
   // }
-  let x = new Array(36);
+  // let x = new Array(36);
   // console.log(x);
 
-  console.log('------');
+  // console.log('------');
 
-  for (let i in result) {
-    if (parseInt(i) + 1 === 3 || 7 || 11 || 15 || 19 || 23 || 27 || 31) {
-      x[i] = ' ';
-    }
-    // console.log(result[i][parseInt(i) + 1]);
-    if (result[i][parseInt(i) + 1] === 'N') {
-      x[i] = 'X';
-    } else {
-      x[i] = parseInt(i) + 1;
-    }
-  }
-  const filtered = x.filter(item => item !== undefined);
+  // for (let i in result) {
+  //   if (parseInt(i) + 1 === 3 || 7 || 11 || 15 || 19 || 23 || 27 || 31) {
+  //     x[i] = ' ';
+  //   }
+  //   // console.log(result[i][parseInt(i) + 1]);
+  //   if (result[i][parseInt(i) + 1] === 'N') {
+  //     x[i] = 'X';
+  //   } else {
+  //     x[i] = parseInt(i) + 1;
+  //   }
+  // }
+  // const filtered = x.filter(item => item !== undefined);
   // console.log(filtered);
 
   // const display = (seatObject) => {
@@ -129,6 +132,16 @@ function ChatScreen({navigation}) {
         },
       },
     ]);
+    console.log('destroy');
+    // dispatch(
+    //   setObject({
+    //     terSfr: '',
+    //     terSto: '',
+    //     date: '',
+    //     time: '',
+    //     arrTime: '',
+    //   }),
+    // );
   }, []);
 
   const [recognized, setRecognized] = useState('');
@@ -140,6 +153,16 @@ function ChatScreen({navigation}) {
   const [partialResults, setPartialResults] = useState([]);
   const [location, setLocation] = useState<ILocation | undefined>(undefined);
   const [isProgress, setIsProgress] = useState(false);
+  const [terSfr, setTerSfr] = useState('');
+  const [terSto, setTerSto] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [arrTime, setArrTime] = useState('');
+
+  const objectList = useSelector(selectObject);
+  const dispatch = useDispatch();
+  // console.log('objectList');
+  // console.log(objectList);
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -173,6 +196,14 @@ function ChatScreen({navigation}) {
     rotId: '',
     duration: '',
   };
+
+  // let bodyObject = {
+  //   terSfr: objectList.terSfr,
+  //   terSto: objectList.terSfr,
+  //   date: objectList.terSfr,
+  //   time: objectList.terSfr,
+  //   arrTime: objectList.terSfr,
+  // };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -473,9 +504,11 @@ function ChatScreen({navigation}) {
 
     console.log(URL);
 
-    console.log(body);
+    // console.log(body);
 
     try {
+      console.log('asdfasdf');
+      console.log(objectList);
       const response = await fetch(URL, {
         method: 'POST',
         headers: {
@@ -484,20 +517,63 @@ function ChatScreen({navigation}) {
         },
         body: JSON.stringify({
           string: message,
-          body: {
-            routeId: body.routeId,
-            date: body.date,
-            time: body.time,
+          object: {
+            terSfr: objectList.terSfr,
+            terSto: objectList.terSto,
+            date: objectList.date,
+            time: objectList.time,
+            arrTime: objectList.arrTime,
           },
         }),
       });
 
       const json = await response.json();
-      console.log('json');
+      console.log('json!!!!!!');
       console.log(json);
-      console.log('body');
-      console.log(body);
-      console.log(json.message.length);
+
+      let newObject = {
+        terSfr: json.result?.params?.terSfr ?? '',
+        terSto: json.result?.params?.terSto ?? '',
+        date: json.result?.params?.date ?? '',
+        time: json.result?.params?.time ?? '',
+        arrTime: json.result?.params?.arrTime ?? '',
+      };
+
+      dispatch(
+        setObject({
+          type: 'UPDATE',
+          payload: newObject,
+          // payload: newObject,
+          // terSfr: json.result?.params?.terSfr ?? '',
+          // terSto: json.result?.params?.terSto ?? '',
+          // date: json.result?.params?.date ?? '',
+          // time: json.result?.params?.time ?? '',
+          // arrTime: json.result?.params?.arrTime ?? '',
+          // terSfr: 'asdf',
+          // terSto: 'asdf',
+          // date: 'asdf',
+          // time: 'asdf',
+          // arrTime: 'asdf',
+        }),
+      );
+
+      console.log('---------------------------');
+      console.log(objectList);
+
+      // setTerSfr(json.result.params?.terSfr);
+      // setTerSto(json.result.params?.terSto);
+      // setTime(json.result.params?.time);
+      // setDate(json.result.params?.date);
+      // setArrTime(json.result.params?.arrTime);
+
+      // const objectList2 = useSelector(selectObject);
+      // console.log(objectList2);
+
+      // console.log('json');
+      // console.log(json);
+      // console.log('body');
+      // console.log(body);
+      // console.log(json.message.length);
 
       body.routeId = json.result?.routeId ?? '';
       body.date = json.result?.date ?? '';
@@ -507,8 +583,8 @@ function ChatScreen({navigation}) {
       body.duration = json.result?.LINE?.durationTime ?? '';
 
       let responseMessages;
-      console.log('두번째 body');
-      console.log(body);
+      // console.log('두번째 body');
+      // console.log(body);
 
       // console.log(json.isSuccess);
 
@@ -589,7 +665,7 @@ function ChatScreen({navigation}) {
         },
       });
       const json = await response.json();
-      //console.log(json);
+      console.log(json);
 
       //console.log(json.isSuccess);
       let responseMessages;
@@ -621,9 +697,9 @@ function ChatScreen({navigation}) {
 
         let x = new Array(36);
         for (let i in result) {
-          if (parseInt(i) + 1 === 3 || 7 || 11 || 15 || 19 || 23 || 27 || 31) {
-            x[i] = ' ';
-          }
+          // if (parseInt(i) + 1 === 3 || 7 || 11 || 15 || 19 || 23 || 27 || 31) {
+          //   x[i] = ' ';
+          // }
           // console.log(result[i][parseInt(i) + 1]);
           if (result[i][parseInt(i) + 1] === 'N') {
             x[i] = 'X';
@@ -672,6 +748,20 @@ function ChatScreen({navigation}) {
   const resetChatting = async () => {
     _clearBody();
     let responseMessages;
+    dispatch(
+      setObject({
+        // terSfr: json.result.params?.terSfr,
+        // terSto: json.result.params?.terSto,
+        // date: json.result.params?.date,
+        // time: json.result.params?.time,
+        // arrTime: json.result.params?.arrTime,
+        terSfr: '',
+        terSto: '',
+        date: '',
+        time: '',
+        arrTime: '',
+      }),
+    );
 
     responseMessages = {
       _id: uuid.v4(),
@@ -848,6 +938,9 @@ function ChatScreen({navigation}) {
   if (!isProgress) {
     mic = (
       <TouchableOpacity
+        // onPress={() => {
+        //   onSend('의정부에서 출발할래');
+        // }}
         onPress={_startRecognizing}
         style={{justifyContent: 'center'}}>
         <Image

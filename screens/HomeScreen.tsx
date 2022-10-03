@@ -1,6 +1,4 @@
-import {
-  Image, StyleSheet, Text, View, SafeAreaView,
-} from 'react-native';
+import {Image, StyleSheet, Text, View, SafeAreaView} from 'react-native';
 import React from 'react';
 import tw from 'twrnc';
 import NavOptions from '../components/navOptions';
@@ -13,7 +11,7 @@ function HomeScreen() {
   // }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F8F8F8' }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#F8F8F8'}}>
       <NavOptions />
     </SafeAreaView>
   );

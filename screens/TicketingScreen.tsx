@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
+import QRCode from 'react-native-qrcode-svg';
 
 function TicketingScreen({navigation}) {
   const [departData, setDepartData] = useState(undefined);
@@ -92,14 +93,17 @@ function TicketingScreen({navigation}) {
           padding: 12,
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
         }}>
+        <Text> </Text>
+        <Text> </Text>
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 18,
             margin: 5,
             textAlign: 'center',
             color: 'black',
+            fontWeight: 'bold',
           }}>
           시외버스 승차권
         </Text>
@@ -110,7 +114,8 @@ function TicketingScreen({navigation}) {
             padding: 5,
           }}>
           <View>
-            <Text style={{color: 'white'}}>{`예매 취소`}</Text>
+            <Text
+              style={{color: 'white', fontWeight: 'bold'}}>{`예매 취소`}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -175,6 +180,27 @@ function TicketingScreen({navigation}) {
             <Text style={{color: 'black'}}>{`좌석: `}</Text>
           </View>
         </TouchableOpacity>
+
+        <View
+          style={{
+            borderBottomColor: 'black',
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderStyle: 'dotted',
+            marginVertical: 15,
+          }}
+        />
+
+        <View style={{flexDirection: 'column', alignItems: 'center'}}>
+          <QRCode
+            size={100} // 로고 사이즈 조절
+            value="https://www.naver.com" // 실제 연결 될 주소
+            logoSize={300}
+            logoBackgroundColor="transparent"
+          />
+          <Text style={{marginTop: 15, color: 'black'}}>
+            승차 시 리더기에 찍어주세요.
+          </Text>
+        </View>
       </View>
     </SafeAreaView>
   );

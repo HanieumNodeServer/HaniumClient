@@ -6,37 +6,55 @@ import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import ChatScreen from './screens/ChatScreen';
 import TicketingScreen from './screens/TicketingScreen';
+import FirstScreen from './screens/FirstScreen';
+import LoginScreen from './screens/LoginScreen';
+import {Provider} from 'react-redux';
+import {store} from './store';
 
 const App = () => {
   const Stack = createStackNavigator();
   return (
-    <NavigationContainer>
-      <SafeAreaProvider>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="HomeScreen"
-            component={HomeScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
+    <Provider store={store}>
+      <NavigationContainer>
+        <SafeAreaProvider>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="FirstScreen"
+              component={FirstScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          <Stack.Screen
-            name="ChatScreen"
-            component={ChatScreen}
-            // options={{
-            //   headerShown: false,
-            // }}
-          />
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          <Stack.Screen
-              name="TicketingScreen"
-              component={TicketingScreen}
-          />
+            <Stack.Screen
+              name="HomeScreen"
+              component={HomeScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
 
-        </Stack.Navigator>
-      </SafeAreaProvider>
-    </NavigationContainer>
+            <Stack.Screen
+              name="ChatScreen"
+              component={ChatScreen}
+              // options={{
+              //   headerShown: false,
+              // }}
+            />
+
+            <Stack.Screen name="TicketingScreen" component={TicketingScreen} />
+          </Stack.Navigator>
+        </SafeAreaProvider>
+      </NavigationContainer>
+    </Provider>
   );
 };
 

@@ -1,9 +1,7 @@
-import {
-    Image, StyleSheet, Text, TouchableOpacity, View,
-} from 'react-native';
-import React,{useState,useEffect} from 'react';
-import { useNavigation } from '@react-navigation/native';
-import TicketingInfo from "./ticketing";
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import TicketingInfo from './ticketing';
 
 /*
 const content = async function(){
@@ -13,7 +11,6 @@ const content = async function(){
 }*/
 
 const navOptions = () => {
-
   const navigation = useNavigation();
 
   return (
@@ -34,10 +31,8 @@ const navOptions = () => {
           flex: 5,
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <TouchableOpacity onPress={() => navigation.navigate('ChatScreen')}>
-
           <View
             style={{
               width: 150,
@@ -55,16 +50,16 @@ const navOptions = () => {
                 height: 100,
                 resizeMode: 'contain',
               }}
-              source={require("../assets/MAIN_MIC.png")}
+              source={require('../assets/MAIN_MIC.png')}
             />
           </View>
         </TouchableOpacity>
-        <Text style={{marginVertical: 10, fontSize: 15}}>
+        <Text style={{marginVertical: 10, fontSize: 15, color: 'black'}}>
           버튼을 눌러 음성 예매를 시작하세요!
         </Text>
-      </View >
+      </View>
       <TouchableOpacity onPress={() => navigation.navigate('TicketingScreen')}>
-          <TicketingInfo />
+        <TicketingInfo />
       </TouchableOpacity>
     </View>
   );
@@ -77,8 +72,8 @@ const styles = StyleSheet.create({
     color: '#1B4679',
     fontSize: 30,
   },
-    contents : {
-        fontSize: 15,
-        marginLeft : 20
-    }
+  contents: {
+    fontSize: 15,
+    marginLeft: 20,
+  },
 });
