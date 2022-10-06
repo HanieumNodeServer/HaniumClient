@@ -7,11 +7,17 @@ import HomeScreen from './screens/HomeScreen';
 import ChatScreen from './screens/ChatScreen';
 import TicketingScreen from './screens/TicketingScreen';
 import FirstScreen from './screens/FirstScreen';
+import LoginScreen from './screens/LoginScreen';
+import OCR from './screens/OCR'
 import {Provider} from 'react-redux';
 import {store} from './store';
+import LoginCheck from "./screens/LoginCheck";
+import SuccessLogin from './screens/SuccessLogin';
+
+const Stack = createStackNavigator();
 
 const App = () => {
-  const Stack = createStackNavigator();
+
   return (
     <Provider store={store}>
       <NavigationContainer>
@@ -24,6 +30,22 @@ const App = () => {
                 headerShown: false,
               }}
             />
+
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+              <Stack.Screen
+                  name="LoginOCR"
+                  component={OCR}
+                  options={{
+                      headerShown: false,
+                  }}
+              />
 
             <Stack.Screen
               name="HomeScreen"
@@ -40,6 +62,23 @@ const App = () => {
               //   headerShown: false,
               // }}
             />
+
+              <Stack.Screen
+                  name="LoginCheck"
+                  component={LoginCheck}
+                  options={{
+                    headerShown: false,
+                  }}
+              />
+
+              <Stack.Screen
+                  name="SuccessLogin"
+                  component={SuccessLogin}
+                  options={{
+                      headerShown: false,
+                  }}
+              />
+
 
             <Stack.Screen name="TicketingScreen" component={TicketingScreen} />
           </Stack.Navigator>

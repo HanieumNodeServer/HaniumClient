@@ -66,6 +66,7 @@ const FirstScreen = () => {
             </Text>
           </View>
         </TouchableOpacity>
+
         <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
           <View
             style={{
@@ -80,6 +81,7 @@ const FirstScreen = () => {
               신분증 진위 여부
             </Text>
           </View>
+
         </TouchableOpacity>
       </View>
     </SafeAreaView>
