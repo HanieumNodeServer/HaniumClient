@@ -7,7 +7,6 @@ import HomeScreen from './screens/HomeScreen';
 import ChatScreen from './screens/ChatScreen';
 import TicketingScreen from './screens/TicketingScreen';
 import FirstScreen from './screens/FirstScreen';
-import LoginScreen from './screens/LoginScreen';
 import {Provider} from 'react-redux';
 import {store} from './store';
 
@@ -21,14 +20,6 @@ const App = () => {
             <Stack.Screen
               name="FirstScreen"
               component={FirstScreen}
-              options={{
-                headerShown: false,
-              }}
-            />
-
-            <Stack.Screen
-              name="LoginScreen"
-              component={LoginScreen}
               options={{
                 headerShown: false,
               }}

@@ -43,6 +43,7 @@ import moment from 'moment';
 import 'moment/locale/ko';
 import {useSelector} from 'react-redux';
 import {selectObject, setObject} from '../slices/navSlice';
+import {selectTicketInfo, setTicketInfo} from '../slices/ticketSlice';
 import {useDispatch} from 'react-redux';
 
 interface ILocation {
@@ -65,11 +66,11 @@ const firstMessage = `🤖안녕하세요 시외버스 예매 챗봇 AI\n'부릉
 아래보이시는 마이크 버튼을 눌러 예매를 시작해 주세요!\n\n⭕사용 예시⭕\n✅내일 오후 3시에 서울에서 부산으로 갈래\n✅이번주 금요일 인천 천안\n✅내일 대구\n\n\
 ❌주의 사항❌\n가고자 하는 곳과 출발하시는 곳은 '지역명 혹은 터미널이름'을 말해주셔야 더 원활한 서비스가 제공됩니다.`;
 
-type messageType = {
+interface messageType {
   id: number;
   text: string;
   createdAt: string;
-};
+}
 
 function ChatScreen({navigation}) {
   const [messages, setMessages] = useState([]);
@@ -79,45 +80,28 @@ function ChatScreen({navigation}) {
     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
   );
 
-  // const seatData =
-  //   '[{"1":"N"},{"2":"Y"},{"3":"N"},{"4":"Y"},{"5":"N"},{"6":"N"},{"7":"N"},{"8":"Y"},{"9":"N"},{"10":"N"},{"11":"Y"},{"12":"N"},{"13":"N"},{"14":"N"},{"15":"N"},{"16":"N"},{"17":"Y"},{"18":"N"},{"19":"N"},{"20":"Y"},{"21":"N"},{"22":"N"},{"23":"Y"},{"24":"N"},{"25":"Y"},{"26":"Y"},{"27":"N"},{"28":"Y"}]';
+  const [career, setCareer] = useState({
+    terSfr: '',
+    terSto: '',
+    date: '',
+    time: '',
+    arrTime: '',
+  });
 
-  // const seatTrim = seatData.slice(1, -1);
-  // const seatList = seatTrim.split(',');
-
-  // const result = seatList[0];
-
-  // seatList.forEach(sdf => console.log(sdf));
-  // const result = seatList.map((data, index) => JSON.parse(data));
-
-  // const x = new Array(9);
-  // for (let i = 0; i < x.length; i++) {
-  //   x[i] = new Array(4);
-  // }
-  // let x = new Array(36);
-  // console.log(x);
-
-  // console.log('------');
-
-  // for (let i in result) {
-  //   if (parseInt(i) + 1 === 3 || 7 || 11 || 15 || 19 || 23 || 27 || 31) {
-  //     x[i] = ' ';
-  //   }
-  //   // console.log(result[i][parseInt(i) + 1]);
-  //   if (result[i][parseInt(i) + 1] === 'N') {
-  //     x[i] = 'X';
-  //   } else {
-  //     x[i] = parseInt(i) + 1;
-  //   }
-  // }
-  // const filtered = x.filter(item => item !== undefined);
-  // console.log(filtered);
-
-  // const display = (seatObject) => {
-  //   for (let i in seatObject) {
-
-  //   }
-  // }
+  const [body, setBody] = useState({
+    routeId: '',
+    departureTer: '',
+    arrivalTer: '',
+    date: '',
+    time: '',
+    startTime: '',
+    arrivalTime: '',
+    corName: '',
+    charge: '',
+    seat: '',
+    rotId: '',
+    duration: '',
+  });
 
   useEffect(() => {
     setMessages([
@@ -132,7 +116,15 @@ function ChatScreen({navigation}) {
         },
       },
     ]);
-    console.log('destroy');
+    // console.log('destroy');
+    // console.log(ticketInfo);
+    setCareer({
+      terSfr: '',
+      terSto: '',
+      date: '',
+      time: '',
+      arrTime: '',
+    });
     // dispatch(
     //   setObject({
     //     terSfr: '',
@@ -153,16 +145,22 @@ function ChatScreen({navigation}) {
   const [partialResults, setPartialResults] = useState([]);
   const [location, setLocation] = useState<ILocation | undefined>(undefined);
   const [isProgress, setIsProgress] = useState(false);
-  const [terSfr, setTerSfr] = useState('');
-  const [terSto, setTerSto] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [arrTime, setArrTime] = useState('');
 
-  const objectList = useSelector(selectObject);
+  // const objectList = useSelector(selectObject);
+  const ticketInfo = useSelector(selectTicketInfo);
   const dispatch = useDispatch();
   // console.log('objectList');
   // console.log(objectList);
+
+  console.log('주기적인 caeer');
+  console.log(career);
+  console.log('주기적인 body');
+  console.log(body);
+
+  useEffect(() => {
+    console.log('이거니...?');
+    console.log(career);
+  }, [career]);
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -182,27 +180,19 @@ function ChatScreen({navigation}) {
     );
   }, []);
 
-  let body = {
-    routeId: '',
-    departureTer: '',
-    arrivalTer: '',
-    date: '',
-    time: '',
-    startTime: '',
-    arrivalTime: '',
-    corName: '',
-    charge: '',
-    seat: '',
-    rotId: '',
-    duration: '',
-  };
-
-  // let bodyObject = {
-  //   terSfr: objectList.terSfr,
-  //   terSto: objectList.terSfr,
-  //   date: objectList.terSfr,
-  //   time: objectList.terSfr,
-  //   arrTime: objectList.terSfr,
+  // let body = {
+  //   routeId: '',
+  //   departureTer: '',
+  //   arrivalTer: '',
+  //   date: '',
+  //   time: '',
+  //   startTime: '',
+  //   arrivalTime: '',
+  //   corName: '',
+  //   charge: '',
+  //   seat: '',
+  //   rotId: '',
+  //   duration: '',
   // };
 
   useLayoutEffect(() => {
@@ -335,59 +325,54 @@ function ChatScreen({navigation}) {
     body.duration = '';
   };
 
-  const onSend = useCallback((messages = []) => {
-    // console.log(messages[0].text);
-    const responseMessages = {
-      _id: uuid.v4(),
-      text: messages,
-      createdAt: new Date(),
-      user: USER,
-    };
-    setMessages(previousMessages =>
-      GiftedChat.append(previousMessages, responseMessages),
-    );
-    console.log(messages);
+  const onSend = useCallback(
+    (messages = []) => {
+      // console.log(messages[0].text);
+      const responseMessages = {
+        _id: uuid.v4(),
+        text: messages,
+        createdAt: new Date(),
+        user: USER,
+      };
+      setMessages(previousMessages =>
+        GiftedChat.append(previousMessages, responseMessages),
+      );
+      console.log(messages);
 
-    _clearState();
-    // dummy();
+      _clearState();
+      // dummy();
 
-    let stringSearch = messages.toString().search('예매');
-    const seatStringSearch = messages.toString().replace(/[^0-9]/g, '');
-    const number = parseInt(seatStringSearch);
-    const isA = /^\d{1,2}번/;
-    const isB = /^\d{1,2}$/;
+      let stringSearch = messages.toString().search('예매');
+      const seatStringSearch = messages.toString().replace(/[^0-9]/g, '');
+      const number = parseInt(seatStringSearch);
+      const isA = /^\d{1,2}번/;
+      const isB = /^\d{1,2}$/;
 
-    const resetObject = messages
-      .toString()
-      .search(/그만|취소|다시|초기화|stop|스탑|스톱|처음부터/);
-    // const resetObject = {
-    // A: messages.toString().search('그만'),
-    // B: messages.toString().search('취소'),
-    // C: messages.toString().search('다시'),
-    // D: messages.toString().search('초기화'),
-    // D: messages.toString().search('stop'),
-    // D: messages.toString().search('스탑'),
-    // D: messages.toString().search('스톱'),
-    // D: messages.toString().search(''),
-    // }
+      const resetObject = messages
+        .toString()
+        .search(/그만|취소|다시|초기화|stop|스탑|스톱|처음부터/);
 
-    console.log(number);
-    console.log(stringSearch);
-    console.log(isA.test(messages), isB.test(messages));
+      console.log(number);
+      console.log(stringSearch);
+      console.log(isA.test(messages), isB.test(messages));
 
-    if (stringSearch === 0) {
-      pickSeat(body);
-    } else if (isA.test(messages) || isB.test(messages)) {
-      reserveTicket(body, number);
-    } else if (resetObject === 0) {
-      resetChatting();
-    } else {
-      requestToAI(messages);
-    }
-    // console.log(body);
+      console.log('career');
+      console.log(career);
 
-    // _clearBody();
-  }, []);
+      if (stringSearch === 0) {
+        pickSeat();
+      } else if (isA.test(messages) || isB.test(messages)) {
+        reserveTicket(number);
+      } else if (resetObject === 0) {
+        resetChatting();
+      } else {
+        requestToAI(messages);
+      }
+      console.log('이곳은 마지막 입니다.');
+      console.log(career);
+    },
+    [career, body],
+  );
 
   // const handleOnPress = useCallback(() => {
   //   if (messages && onSend) {
@@ -492,6 +477,7 @@ function ChatScreen({navigation}) {
   };*/
 
   const requestToAI = async (message: string) => {
+    console.log('requestToAI 함수');
     const URL =
       'http://43.200.99.243/bus/reservation/auto/ai?' +
       'latitude=' +
@@ -507,8 +493,8 @@ function ChatScreen({navigation}) {
     // console.log(body);
 
     try {
-      console.log('asdfasdf');
-      console.log(objectList);
+      // console.log('asdfasdf');
+      // console.log(objectList);
       const response = await fetch(URL, {
         method: 'POST',
         headers: {
@@ -518,11 +504,11 @@ function ChatScreen({navigation}) {
         body: JSON.stringify({
           string: message,
           object: {
-            terSfr: objectList.terSfr,
-            terSto: objectList.terSto,
-            date: objectList.date,
-            time: objectList.time,
-            arrTime: objectList.arrTime,
+            terSfr: career.terSfr,
+            terSto: career.terSto,
+            date: career.date,
+            time: career.time,
+            arrTime: career.arrTime,
           },
         }),
       });
@@ -531,62 +517,44 @@ function ChatScreen({navigation}) {
       console.log('json!!!!!!');
       console.log(json);
 
-      let newObject = {
-        terSfr: json.result?.params?.terSfr ?? '',
-        terSto: json.result?.params?.terSto ?? '',
-        date: json.result?.params?.date ?? '',
-        time: json.result?.params?.time ?? '',
-        arrTime: json.result?.params?.arrTime ?? '',
-      };
+      setCareer(prevState => ({
+        // terSfr: 'fe',
+        // terSto: 'sdf',
+        // date: 'sdf',
+        // time: 'eeg',
+        // arrTime: 'ggg',
+        // ...prevState,
+        terSfr: json.result?.params.terSfr,
+        terSto: json.result?.params.terSto,
+        date: json.result?.params.date,
+        time: json.result?.params.time,
+        arrTime: json.result?.params.arrTime,
+      }));
 
-      dispatch(
-        setObject({
-          type: 'UPDATE',
-          payload: newObject,
-          // payload: newObject,
-          // terSfr: json.result?.params?.terSfr ?? '',
-          // terSto: json.result?.params?.terSto ?? '',
-          // date: json.result?.params?.date ?? '',
-          // time: json.result?.params?.time ?? '',
-          // arrTime: json.result?.params?.arrTime ?? '',
-          // terSfr: 'asdf',
-          // terSto: 'asdf',
-          // date: 'asdf',
-          // time: 'asdf',
-          // arrTime: 'asdf',
-        }),
-      );
+      // console.log('career');
+      // console.log(career);
 
-      console.log('---------------------------');
-      console.log(objectList);
+      setBody(prevState => ({
+        ...prevState,
+        routeId: json.result?.routeId ?? '',
+        date: json.result?.date ?? '',
+        time: json.result?.LINE?.time ?? '',
+        rotId: json.result?.LINE?.rotId ?? '',
+        corName: json.result?.LINE?.corName ?? '',
+        duration: json.result?.LINE?.durationTime ?? '',
+      }));
 
-      // setTerSfr(json.result.params?.terSfr);
-      // setTerSto(json.result.params?.terSto);
-      // setTime(json.result.params?.time);
-      // setDate(json.result.params?.date);
-      // setArrTime(json.result.params?.arrTime);
+      // body.routeId = json.result?.routeId ?? '';
+      // body.date = json.result?.date ?? '';
+      // body.time = json.result?.LINE?.time ?? '';
+      // body.rotId = json.result?.LINE?.rotId ?? '';
+      // body.corName = json.result?.LINE?.corName ?? '';
+      // body.duration = json.result?.LINE?.durationTime ?? '';
 
-      // const objectList2 = useSelector(selectObject);
-      // console.log(objectList2);
-
-      // console.log('json');
-      // console.log(json);
       // console.log('body');
       // console.log(body);
-      // console.log(json.message.length);
-
-      body.routeId = json.result?.routeId ?? '';
-      body.date = json.result?.date ?? '';
-      body.time = json.result?.LINE?.time ?? '';
-      body.rotId = json.result?.LINE?.rotId ?? '';
-      body.corName = json.result?.LINE?.corName ?? '';
-      body.duration = json.result?.LINE?.durationTime ?? '';
 
       let responseMessages;
-      // console.log('두번째 body');
-      // console.log(body);
-
-      // console.log(json.isSuccess);
 
       if (json.isSuccess && json.message.length > 20) {
         let hour = 0;
@@ -646,15 +614,19 @@ function ChatScreen({navigation}) {
     }
   };
 
-  const pickSeat = async data => {
+  const pickSeat = async () => {
+    console.log('pickSeat 함수');
+    console.log(body);
     let url =
       'http://43.200.99.243/bus/seat/list?' +
       'routeId=' +
-      data.routeId +
+      body.routeId +
       '&date=' +
-      data.date +
+      body.date +
       '&time=' +
-      data.time;
+      body.time;
+
+    console.log(url);
 
     try {
       const response = await fetch(url, {
@@ -682,7 +654,12 @@ function ChatScreen({navigation}) {
         //   typeof object
         // })
 
-        body.charge = json.result.FEE;
+        setBody(prevState => ({
+          ...prevState,
+          charge: json.result.FEE,
+        }));
+
+        // body.charge = json.result.FEE;
 
         let resultFee = json.result.FEE;
         let regexp = /\B(?=(\d{3})+(?!\d))/g;
@@ -748,20 +725,28 @@ function ChatScreen({navigation}) {
   const resetChatting = async () => {
     _clearBody();
     let responseMessages;
-    dispatch(
-      setObject({
-        // terSfr: json.result.params?.terSfr,
-        // terSto: json.result.params?.terSto,
-        // date: json.result.params?.date,
-        // time: json.result.params?.time,
-        // arrTime: json.result.params?.arrTime,
-        terSfr: '',
-        terSto: '',
-        date: '',
-        time: '',
-        arrTime: '',
-      }),
-    );
+    // dispatch(
+    //   setObject({
+    //     // terSfr: json.result.params?.terSfr,
+    //     // terSto: json.result.params?.terSto,
+    //     // date: json.result.params?.date,
+    //     // time: json.result.params?.time,
+    //     // arrTime: json.result.params?.arrTime,
+    //     terSfr: '',
+    //     terSto: '',
+    //     date: '',
+    //     time: '',
+    //     arrTime: '',
+    //   }),
+    // );
+
+    setCareer({
+      terSfr: '',
+      terSto: '',
+      date: '',
+      time: '',
+      arrTime: '',
+    });
 
     responseMessages = {
       _id: uuid.v4(),
@@ -774,10 +759,11 @@ function ChatScreen({navigation}) {
     );
   };
 
-  const reserveTicket = async (data, number) => {
+  const reserveTicket = async number => {
+    console.log('reserveTicket 함수');
     let url = 'http://43.200.99.243/bus/reservation/ticket';
 
-    console.log(data);
+    // console.log(data);
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -786,19 +772,28 @@ function ChatScreen({navigation}) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          routeId: data.routeId,
-          date: data.date,
-          startTime: data.time,
-          charge: data.charge,
-          rotId: data.rotId,
+          routeId: body.routeId,
+          date: body.date,
+          startTime: body.time,
+          charge: body.charge,
+          rotId: body.rotId,
           seat: number,
-          duration: data.duration,
+          duration: body.duration,
         }),
       });
 
       const json = await response.json();
 
-      console.log('json', json);
+      console.log('json');
+      console.log(json);
+
+      const ticketObject = {
+        ...body,
+      };
+      dispatch(setTicketInfo(ticketObject));
+
+      console.log('ticketinfo');
+      console.log(ticketInfo);
 
       console.log(json.isSuccess);
       let responseMessages;
@@ -939,7 +934,7 @@ function ChatScreen({navigation}) {
     mic = (
       <TouchableOpacity
         // onPress={() => {
-        //   onSend('의정부에서 출발할래');
+        //   onSend('내일 울산 갈래');
         // }}
         onPress={_startRecognizing}
         style={{justifyContent: 'center'}}>

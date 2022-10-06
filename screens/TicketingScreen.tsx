@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import QRCode from 'react-native-qrcode-svg';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectTicketInfo} from '../slices/ticketSlice';
 
 function TicketingScreen({navigation}) {
   const [departData, setDepartData] = useState(undefined);
@@ -24,6 +26,11 @@ function TicketingScreen({navigation}) {
   const [date, setDate] = useState('');
   const [rest, setRest] = useState('');
   const [weekday, setWeekday] = useState(0);
+
+  // const dispatch = useDispatch();
+  // const ticketInfo = useSelector(selectTicketInfo);
+
+  // console.log(ticketInfo);
 
   const week = ['일', '월', '화', '수', '목', '금', '토'];
   const url =
@@ -177,7 +184,7 @@ function TicketingScreen({navigation}) {
             borderRadius: 7,
           }}>
           <View>
-            <Text style={{color: 'black'}}>{`좌석: `}</Text>
+            <Text style={{color: 'black'}}>{`좌석:  23`}</Text>
           </View>
         </TouchableOpacity>
 
@@ -192,12 +199,12 @@ function TicketingScreen({navigation}) {
 
         <View style={{flexDirection: 'column', alignItems: 'center'}}>
           <QRCode
-            size={100} // 로고 사이즈 조절
+            size={200} // 로고 사이즈 조절
             value="https://www.naver.com" // 실제 연결 될 주소
             logoSize={300}
             logoBackgroundColor="transparent"
           />
-          <Text style={{marginTop: 15, color: 'black'}}>
+          <Text style={{marginTop: 15, color: 'black', fontWeight: 'bold'}}>
             승차 시 리더기에 찍어주세요.
           </Text>
         </View>

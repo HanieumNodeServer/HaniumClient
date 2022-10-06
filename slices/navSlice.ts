@@ -31,39 +31,28 @@ export const navSlice = createSlice({
     setTravelTimeInformation: (state, action) => {
       state.travelTimeInformation = action.payload;
     },
-    // setTravelTimeInformation: (state, action) => {
-    //   state.travelTimeInformation = action.payload;
-    // },
-    // setTravelTimeInformation: (state, action) => {
-    //   state.travelTimeInformation = action.payload;
-    // },
-    // setTravelTimeInformation: (state, action) => {
-    //   state.travelTimeInformation = action.payload;
-    // },
-    // setTravelTimeInformation: (state, action) => {
-    //   state.travelTimeInformation = action.payload;
-    // },
-    // setTravelTimeInformation: (state, action) => {
-    //   state.travelTimeInformation = action.payload;
-    // },
+
     setObject: (state, action) => {
-      // (state.object.terSfr = action.payload.terSfr),
-      //   (state.object.terSto = action.payload.terSto),
-      //   (state.object.date = action.payload.date),
-      //   (state.object.time = action.payload.time),
-      //   (state.object.arrTime = action.payload.arrTime);
-      switch (action.type) {
-        case 'UPDATE':
-          const newObject = {
-            terSfr: action.payload.terSfr,
-            terSto: action.payload.terSto,
-            date: action.payload.date,
-            time: action.payload.time,
-            arrTime: action.payload.arrTime,
-          };
-          state.object = newObject;
-      }
-      // state.push(newObject)
+      console.log(action.payload);
+      const newObject = {
+        terSfr: action.payload.terSfr,
+        terSto: action.payload.terSto,
+        date: action.payload.date,
+        time: action.payload.time,
+        arrTime: action.payload.arrTime,
+      };
+      state.object = newObject;
+    },
+    set: (state, action) => {
+      console.log(action.payload);
+      const newObject = {
+        terSfr: action.payload.terSfr,
+        terSto: action.payload.terSto,
+        date: action.payload.date,
+        time: action.payload.time,
+        arrTime: action.payload.arrTime,
+      };
+      state.object = newObject;
     },
   },
 });

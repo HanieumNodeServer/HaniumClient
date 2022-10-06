@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native';
@@ -6,7 +6,15 @@ import {SafeAreaView} from 'react-native';
 const FirstScreen = () => {
   const navigation = useNavigation();
   return (
-    <SafeAreaView style={{flexDirection: 'column', flex: 1, margin: 20}}>
+    <SafeAreaView
+      style={{
+        flexDirection: 'column',
+        flex: 1,
+        margin: 20,
+        backgroundColor: '#ffffff',
+        padding: 10,
+        borderRadius: 10,
+      }}>
       <View style={{flex: 1}}>
         <Text style={{color: 'gray', fontSize: 30}}>WELCOME!</Text>
         <Text
@@ -28,7 +36,22 @@ const FirstScreen = () => {
         </Text>
       </View>
 
-      <View style={{backgroundColor: 'white', flex: 2}}></View>
+      <View
+        style={{
+          flex: 2,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Image
+          style={{
+            width: 650,
+            height: 650,
+            resizeMode: 'contain',
+            justifyContent: 'center',
+          }}
+          source={require('../assets/intro.png')}
+        />
+      </View>
 
       <View style={{flexDirection: 'column', flex: 1, marginTop: 50}}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
@@ -43,18 +66,20 @@ const FirstScreen = () => {
             </Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#ffffff',
-            marginTop: 10,
-            padding: 15,
-            borderColor: '#1e90ff',
-            borderWidth: 1,
-            borderRadius: 5,
-          }}>
-          <Text style={{color: '#1e90ff', textAlign: 'center'}}>
-            신분증 진위 여부
-          </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+          <View
+            style={{
+              backgroundColor: '#ffffff',
+              marginTop: 10,
+              padding: 15,
+              borderColor: '#1e90ff',
+              borderWidth: 1,
+              borderRadius: 5,
+            }}>
+            <Text style={{color: '#1e90ff', textAlign: 'center'}}>
+              신분증 진위 여부
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -2,6 +2,8 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import TicketingInfo from './ticketing';
+import {useSelector} from 'react-redux';
+import {selectTicketInfo} from '../slices/ticketSlice';
 
 /*
 const content = async function(){
@@ -12,6 +14,10 @@ const content = async function(){
 
 const navOptions = () => {
   const navigation = useNavigation();
+
+  const ticketInfo = useSelector(selectTicketInfo);
+
+  console.log(ticketInfo);
 
   return (
     <View
