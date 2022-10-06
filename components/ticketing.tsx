@@ -22,7 +22,10 @@ const TicketingInfo = () => {
     fetch(url, {method: 'GET'})
       .then(response => response.json())
       .then(json => {
-        // console.log([json.result.result[0].DepartTerminal,json.result.result[0].ArrivalTerminal])
+        console.log([
+          json.result.result[0].DepartTerminal,
+          json.result.result[0].ArrivalTerminal,
+        ]);
         setDepartData(json.result.result[0].DepartTerminal);
         setArrivalData(json.result.result[0].ArrivalTerminal);
         if (departData) {
@@ -32,9 +35,32 @@ const TicketingInfo = () => {
           isExist(false);
         }
       })
-      .finally()
-      .catch(error => console.log(error));
-  }, [departData]);
+      .catch(error => console.log(error))
+      .finally();
+
+    return () => {};
+  }, []);
+
+  // useEffect(() => {
+  //   fetch(url, {method: 'GET'})
+  //     .then(response => response.json())
+  //     .then(json => {
+  //       console.log([
+  //         json.result.result[0].DepartTerminal,
+  //         json.result.result[0].ArrivalTerminal,
+  //       ]);
+  //       setDepartData(json.result.result[0].DepartTerminal);
+  //       setArrivalData(json.result.result[0].ArrivalTerminal);
+  //       if (departData) {
+  //         console.log(departData);
+  //         isExist(true);
+  //       } else {
+  //         isExist(false);
+  //       }
+  //     })
+  //     .finally()
+  //     .catch(error => console.log(error));
+  // }, [departData]);
 
   if (exist) {
     return (

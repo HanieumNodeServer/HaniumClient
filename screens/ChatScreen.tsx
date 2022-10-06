@@ -145,6 +145,8 @@ function ChatScreen({navigation}) {
   const [partialResults, setPartialResults] = useState([]);
   const [location, setLocation] = useState<ILocation | undefined>(undefined);
   const [isProgress, setIsProgress] = useState(false);
+  const [maxSeat, setMaxSeat] = useState(0);
+  const [seatInfo, setSeatInfo] = useState<string[] | number[]>([]);
 
   // const objectList = useSelector(selectObject);
   const ticketInfo = useSelector(selectTicketInfo);
@@ -152,10 +154,12 @@ function ChatScreen({navigation}) {
   // console.log('objectList');
   // console.log(objectList);
 
-  console.log('주기적인 caeer');
-  console.log(career);
-  console.log('주기적인 body');
-  console.log(body);
+  // console.log('주기적인 caeer');
+  // console.log(career);
+  // console.log('주기적인 body');
+  // console.log(body);
+  // console.log('주기적인 seat');
+  // console.log(maxSeat);
 
   useEffect(() => {
     console.log('이거니...?');
@@ -342,7 +346,7 @@ function ChatScreen({navigation}) {
       _clearState();
       // dummy();
 
-      let stringSearch = messages.toString().search('예매');
+      const stringSearch = messages.toString().search(/^예매해 줘|^예매/);
       const seatStringSearch = messages.toString().replace(/[^0-9]/g, '');
       const number = parseInt(seatStringSearch);
       const isA = /^\d{1,2}번/;
@@ -371,7 +375,7 @@ function ChatScreen({navigation}) {
       console.log('이곳은 마지막 입니다.');
       console.log(career);
     },
-    [career, body],
+    [career, body, maxSeat, seatInfo],
   );
 
   // const handleOnPress = useCallback(() => {
@@ -672,6 +676,8 @@ function ChatScreen({navigation}) {
 
         let result = seatList.map((data, index) => JSON.parse(data));
 
+        setMaxSeat(result.length);
+
         let x = new Array(36);
         for (let i in result) {
           // if (parseInt(i) + 1 === 3 || 7 || 11 || 15 || 19 || 23 || 27 || 31) {
@@ -679,13 +685,15 @@ function ChatScreen({navigation}) {
           // }
           // console.log(result[i][parseInt(i) + 1]);
           if (result[i][parseInt(i) + 1] === 'N') {
-            x[i] = 'X';
+            seatInfo[i] = 'X';
           } else {
-            x[i] = parseInt(i) + 1;
+            seatInfo[i] = parseInt(i) + 1;
           }
         }
 
-        let filtered = x.filter(item => item !== undefined);
+        let filtered = seatInfo.filter(item => item !== undefined);
+
+        console.log(filtered);
 
         responseMessages = {
           _id: uuid.v4(),
@@ -760,6 +768,25 @@ function ChatScreen({navigation}) {
   };
 
   const reserveTicket = async number => {
+    console.log(number, maxSeat);
+
+    if (
+      number > maxSeat ||
+      seatInfo[parseInt(number) + 1] == 'X' ||
+      seatInfo[parseInt(number) + 1] <= 0
+    ) {
+      let responseMessages = {
+        _id: uuid.v4(),
+        text: '해당 좌석은 예매할 수 없습니다. 다른 좌석을 골라주세요.',
+        createdAt: new Date(),
+        user: BOT,
+      };
+
+      setMessages(previousMessages =>
+        GiftedChat.append(previousMessages, responseMessages),
+      );
+    }
+
     console.log('reserveTicket 함수');
     let url = 'http://43.200.99.243/bus/reservation/ticket';
 

@@ -17,8 +17,6 @@ const navOptions = () => {
 
   const ticketInfo = useSelector(selectTicketInfo);
 
-  console.log(ticketInfo);
-
   return (
     <View
       style={{
